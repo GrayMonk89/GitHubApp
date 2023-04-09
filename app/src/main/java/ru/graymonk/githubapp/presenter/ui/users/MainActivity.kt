@@ -1,39 +1,48 @@
 package ru.graymonk.githubapp.presenter.ui.users
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.graymonk.githubapp.R
 import ru.graymonk.githubapp.app
 import ru.graymonk.githubapp.databinding.ActivityMainBinding
 import ru.graymonk.githubapp.domain.entities.UserEntity
-import ru.graymonk.githubapp.domain.repository.UsersRepository
 import kotlin.system.exitProcess
 
-class MainActivity : AppCompatActivity() , UsersContract.View {
+class MainActivity : AppCompatActivity(), UsersContract.View {
 
     private lateinit var binding: ActivityMainBinding
     private val adapter = UsersAdapter()
     //private val usersRepository: UsersRepository by lazy { app.userRepository }
 
-    private val presenter: UsersContract.Presenter by lazy { UsersPresenter(app.userRepository) }
+    //private val presenter: UsersContract.Presenter by lazy { UsersPresenter(app.userRepository) }
+
+    private lateinit var presenter: UsersContract.Presenter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //showProgress(false)
-
         initRecyclerView()
 
-        //userListUpdate()
         setOnClickListener()
+
+        presenter = extractPresenter()
         presenter.attach(this)
+    }
+
+    private fun extractPresenter(): UsersContract.Presenter {
+        return lastCustomNonConfigurationInstance as? UsersContract.Presenter
+            ?: UsersPresenter(app.userRepository)
+    }
+
+    override fun onRetainCustomNonConfigurationInstance(): UsersContract.Presenter {
+        return presenter
     }
 
     override fun onDestroy() {
@@ -42,13 +51,13 @@ class MainActivity : AppCompatActivity() , UsersContract.View {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.activity_main_menu,menu)
+        menuInflater.inflate(R.menu.activity_main_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     //region menu init
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.menuExit -> {
                 exitProcess(0)
             }
@@ -58,13 +67,12 @@ class MainActivity : AppCompatActivity() , UsersContract.View {
 
     private fun setOnClickListener() {
         binding.mainActivityRefreshButton.setOnClickListener {
-            Log.d("@@@","click")
+            Log.d("@@@", "click")
             presenter.onRefresh()
             Toast.makeText(this, "Refresh!", Toast.LENGTH_SHORT).show()
         }
     }
     //endregion
-
 
 
     //region Contract
