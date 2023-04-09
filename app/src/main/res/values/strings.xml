@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GitHubApp</string>
+    <string name="hint_user_id">User Id</string>
+    <string name="hint_user_login">User Login</string>
+    <string name="item_user_imageview_description_image_avatar">Image Avatar</string>
+    <string name="exit_default">exit</string>
+</resources>
